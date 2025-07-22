@@ -3,11 +3,19 @@ from datetime import date, datetime
 
 # Setup
 pytrends = TrendReq(hl='en-US', tz=180)
-df = pytrends.trending_searches(pn='kenya')
+try:
+    df = pytrends.trending_searches(pn='kenya')
+    print("Fetched DataFrame:")
+    print(df)
+    if df.empty or 0 not in df.columns:
+        raise ValueError("Trending searches DataFrame is empty or column 0 does not exist.")
+    top = df[0].tolist()[:5]
+except Exception as e:
+    print("Error fetching or processing trends:", e)
+    top = ["No trends available"]
 
 today = date.today().strftime("%B %d, %Y")
 now = datetime.now().strftime("%H:%M:%S")
-top = df[0].tolist()[:5]
 
 # Post
 post = f"🌍 *Top Google Trends in Kenya – {today} at {now}* 🇰🇪\n\n"
