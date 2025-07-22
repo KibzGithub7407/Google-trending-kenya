@@ -1,0 +1,33 @@
+name: 🗓️ Daily Google Trends for Kenya
+
+on:
+  schedule:
+    - cron: '30 5 * * *'   # 8:30 AM Nairobi time
+  workflow_dispatch:        # allows manual trigger
+
+jobs:
+  trends:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run script
+        run: python trends.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "actions@github.com"
+          git add daily_trends_post.txt
+          git commit -m "Update trends for $(date +'%Y-%m-%d')" || echo "No changes"
+          git push
